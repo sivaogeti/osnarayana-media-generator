@@ -75,24 +75,20 @@ if prompt:
         if st.button("Generate Audio"):
             st.write("🔄 Audio generation started...")
     
-            # Construct filename with sanitized prefix + timestamp
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            # Construct filename without timestamp
             filename_prefix = re.sub(r'\W+', '_', prompt).lower()
-            audio_filename = f"{filename_prefix}_{timestamp}.mp3"
-            audio_path = os.path.join("outputs/audio", audio_filename)
+            audio_path = os.path.join("outputs/audio", f"{filename_prefix}.mp3")
     
-            # Ensure output folder exists
             os.makedirs(os.path.dirname(audio_path), exist_ok=True)
     
             with st.spinner("Generating audio..."):
                 try:
-                    print("📣 Calling generate_audio()...")
                     result_path = generate_audio(translated_prompt, audio_path)
                 except Exception as e:
-                    print(f"❌ Exception in generate_audio: {e}")
+                    st.error("⚠️ Audio generation crashed.")
+                    st.write(f"Error: {str(e)}")
                     result_path = None
     
-            # If audio generated successfully
             if result_path and os.path.exists(result_path):
                 st.audio(result_path)
                 with open(result_path, "rb") as f:
@@ -100,6 +96,7 @@ if prompt:
             else:
                 st.warning("⚠️ Audio generation failed.")
                 st.text(f"🔍 File not found at: {audio_path}")
+
     
 
     
