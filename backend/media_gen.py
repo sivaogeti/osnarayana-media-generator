@@ -1,96 +1,158 @@
-import streamlit as st
+# ✅ Updated media_gen.py with file logging + UI debug toggle
 import os
-from datetime import datetime
-from backend.media_gen import generate_audio, generate_image, generate_video
+import re
+import logging
+import streamlit as st
+import requests
+from PIL import Image, UnidentifiedImageError
+from io import BytesIO
+from dotenv import load_dotenv
+from moviepy.editor import ImageClip, AudioFileClip
+from elevenlabs import generate, save, set_api_key
 from googletrans import Translator
 
-# --- Helper Functions ---
+# Load env vars
+load_dotenv()
 
-def translate_prompt(prompt, lang):
-    if lang == "English":
-        return prompt
-    try:
-        translator = Translator()
-        translated = translator.translate(prompt, dest=lang.lower()).text
-        return translated
-    except Exception:
-        return prompt  # fallback to original
-
-def sanitize_filename(prompt):
-    return "".join(c if c.isalnum() else "_" for c in prompt.strip())[:50].lower()
-
-def ensure_dir(path):
-    os.makedirs(path, exist_ok=True)
-
-# --- Streamlit Page Config ---
-st.set_page_config(page_title="OSN Media Generator", layout="wide")
-
-# ---------- Sidebar ----------
-with st.sidebar:
-    st.title("⚙️ Settings")
-    language_options = ['English', 'Telugu', 'Hindi']
-    prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
-    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)    
-    dark_mode = st.toggle("🌗 Dark Mode", value=False)
-    st.markdown("---")
-    st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
-st.markdown(
-    """
-    <style>
-    body { background-color: %s; color: %s; }
-    </style>
-    """ % ("#0E1117" if dark_mode else "#FFFFFF", "#FAFAFA" if dark_mode else "#000000"),
-    unsafe_allow_html=True,
+# Logging setup
+logging.basicConfig(
+    filename="app.log",
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
 )
 
+# Constants
+OUTPUT_DIR = "outputs"
+DEFAULT_IMAGE = "assets/fallback.jpg"
+WATERMARK_PATH = "assets/logo_watermark.png"
+UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
 
+os.makedirs("outputs/audio", exist_ok=True)
+os.makedirs("outputs/images", exist_ok=True)
+os.makedirs("outputs/videos", exist_ok=True)
 
-st.title("🎮 Welcome to OSN Media Generator")
-st.caption("Enter your media prompt")
+def translate_text(text, target_lang):
+    return Translator().translate(text, dest=target_lang).text
 
-prompt = st.text_input("📝 Prompt", placeholder="e.g., A farmer working in the field", label_visibility="collapsed")
+def sanitize_filename(text):
+    return re.sub(r'\W+', '_', text).lower()[:50]
 
-# Debug toggle
-debug_mode = st.toggle("🪛 Show Debug Logs", value=False)
+def apply_watermark(image_path, watermark_path=WATERMARK_PATH):
+    try:
+        base = Image.open(image_path).convert("RGBA")
+        watermark = Image.open(watermark_path).convert("RGBA").resize((100, 100))
+        base.paste(watermark, (base.width - 110, base.height - 110), watermark)
+        base.convert("RGB").save(image_path)
+    except Exception as e:
+        logging.error(f"Watermarking failed: {e}")
+        st.write(f"❌ Watermarking failed: {e}")
 
-# Watermark option
-add_watermark = st.checkbox("🌊 Add watermark/logo (optional)", value=False)
+def use_fallback_image(prompt, add_watermark=False):
+    try:
+        fallback_path = DEFAULT_IMAGE
+        output_path = f"outputs/images/{sanitize_filename(prompt)}.jpg"
+        with Image.open(fallback_path) as img:
+            img.save(output_path)
+        if add_watermark:
+            apply_watermark(output_path)
+        return output_path
+    except UnidentifiedImageError:
+        logging.error("Could not open fallback image.")
+        st.write("❌ Could not open fallback image.")
+        return None
 
-# Translate language
-lang = st.selectbox("🌐 Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
+def generate_gtts_fallback(prompt, output_path):
+    try:
+        from gtts import gTTS
+        tts = gTTS(text=prompt, lang="en")
+        tts.save(output_path)
+        logging.info(f"gTTS fallback audio saved to {output_path}")
+        st.write(f"✅ Fallback audio (gTTS) saved to {output_path}")
+        return output_path
+    except Exception as e:
+        logging.error(f"gTTS fallback failed: {e}")
+        st.write(f"❌ gTTS fallback failed: {str(e)}")
+        return None
 
-# Tabs for media
-tab1, tab2, tab3 = st.tabs(["🖼️ Image", "🔊 Audio", "🎞️ Video"])
+def generate_image(prompt, file_tag, add_watermark=False):
+    try:
+        url = f"https://api.unsplash.com/photos/random?query={requests.utils.quote(prompt)}&client_id={UNSPLASH_ACCESS_KEY}"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        image_url = response.json()["urls"]["regular"]
+        image_response = requests.get(image_url, timeout=10)
+        image_response.raise_for_status()
 
-if prompt:
-    translated_prompt = translate_prompt(prompt, lang)
-    safe_prompt = sanitize_filename(prompt)
+        output_path = f"outputs/images/{sanitize_filename(prompt)}.jpg"
+        img = Image.open(BytesIO(image_response.content))
+        img.convert("RGB").save(output_path)
 
-    with tab1:
-        if st.button("Generate Image"):
-            image_path = f"outputs/images/{safe_prompt}.png"
-            ensure_dir("outputs/images")
-            path = generate_image(translated_prompt, image_path, add_watermark)
-            if path and os.path.exists(path):
-                st.image(path, caption="Generated Image", use_container_width=True)
-                st.download_button("📥 Download Image", data=open(path, "rb"), file_name=os.path.basename(path))
+        if add_watermark:
+            apply_watermark(output_path)
 
-    with tab2:
-        if st.button("Generate Audio"):
-            audio_path = f"outputs/audio/{safe_prompt}.mp3"
-            ensure_dir("outputs/audio")
-            path = generate_audio(translated_prompt, audio_path, debug_mode)
-            if path and os.path.exists(path):
-                st.audio(path)
-                st.download_button("📥 Download Audio", data=open(path, "rb"), file_name=os.path.basename(path))
+        return output_path
+    except Exception as e:
+        logging.error(f"Image generation failed: {e}")
+        st.write("🔁 Unsplash failed. Using fallback.")
+        st.write(f"❌ Image generation failed: {e}")
+        return use_fallback_image(prompt, add_watermark=add_watermark)
 
-    with tab3:
-        if st.button("Generate Video"):
-            video_path = f"outputs/videos/{safe_prompt}.mp4"
-            image_path = f"outputs/images/{safe_prompt}.jpg"
-            audio_path = f"outputs/audio/{safe_prompt}.mp3"
-            ensure_dir("outputs/videos")
-            path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark)
-            if path and os.path.exists(path):
-                st.video(path)
-                st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path))
+def generate_audio(prompt, output_path, debug_mode=False):
+    try:
+        api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
+
+        if debug_mode:
+            st.write(f"📂 Current working directory: {os.getcwd()}")
+            st.write(f"📄 Expected audio path: {output_path}")
+            st.write(f"📁 Directory exists: {os.path.isdir(os.path.dirname(output_path))}")
+
+        if api_key:
+            if debug_mode:
+                st.write(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
+
+            set_api_key(api_key)
+            if debug_mode:
+                st.write(f"🎧 Generating audio for prompt: {prompt}")
+
+            try:
+                audio = generate(text=prompt, voice="Aria", model="eleven_monolingual_v1")
+                save(audio, output_path)
+                logging.info(f"Audio saved successfully to {output_path}")
+
+                if debug_mode:
+                    st.write(f"🔍 File exists after save? {os.path.exists(output_path)}")
+                    st.write(f"✅ Audio saved successfully to {output_path}")
+                return output_path
+
+            except Exception as e:
+                logging.warning(f"ElevenLabs failed: {e}")
+                if debug_mode:
+                    st.write(f"⚠️ ElevenLabs failed: {str(e)}")
+                    st.write("🔁 Falling back to gTTS...")
+                return generate_gtts_fallback(prompt, output_path)
+
+        else:
+            logging.warning("ELEVEN_API_KEY not found")
+            if debug_mode:
+                st.write("❌ ELEVEN_API_KEY not found. Falling back to gTTS.")
+            return generate_gtts_fallback(prompt, output_path)
+
+    except Exception as e:
+        logging.error(f"Exception during audio generation setup: {e}")
+        if debug_mode:
+            st.write(f"❌ Exception during audio generation setup: {str(e)}")
+            st.write("🔁 Falling back to gTTS...")
+        return generate_gtts_fallback(prompt, output_path)
+
+def generate_video(prompt, image_path, audio_path, output_path, add_watermark=False):
+    try:
+        audio_clip = AudioFileClip(audio_path)
+        image_clip = ImageClip(image_path).set_duration(audio_clip.duration).resize(height=720)
+        video = image_clip.set_audio(audio_clip)
+        output_path = f"outputs/videos/{sanitize_filename(prompt)}.mp4"
+        video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac", verbose=False, logger=None)
+        return output_path
+    except Exception as e:
+        logging.error(f"Video generation failed: {e}")
+        st.write(f"❌ Video generation failed: {e}")
+        return None
