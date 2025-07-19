@@ -144,7 +144,7 @@ def generate_audio(prompt, output_path, debug_mode=False):
             st.write("🔁 Falling back to gTTS...")
         return generate_gtts_fallback(prompt, output_path)
 
-def generate_video(prompt, output_path, add_watermark=False):
+def generate_video(prompt, image_path, audio_path, output_path, add_watermark=False):
     try:
         audio_clip = AudioFileClip(audio_path)
         image_clip = ImageClip(image_path).set_duration(audio_clip.duration).resize(height=720)
