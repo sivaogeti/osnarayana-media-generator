@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from datetime import datetime
-from backend.media_gen import generate_audio, generate_image, generate_video
+from media_gen import generate_audio, generate_image, generate_video
 from googletrans import Translator
 
 # --- Helper Functions ---
@@ -25,15 +25,8 @@ def ensure_dir(path):
 # --- Streamlit Page Config ---
 st.set_page_config(page_title="OSN Media Generator", layout="wide")
 
-# ---------- Sidebar ----------
-with st.sidebar:
-    st.title("⚙️ Settings")
-    language_options = ['English', 'Telugu', 'Hindi']
-    prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
-    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)    
-    dark_mode = st.toggle("🌗 Dark Mode", value=False)
-    st.markdown("---")
-    st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
+# --- Theme Toggle ---
+dark_mode = st.toggle("🌙 Dark Mode", value=False)
 st.markdown(
     """
     <style>
@@ -89,7 +82,10 @@ if prompt:
             audio_path = f"outputs/audio/{safe_prompt}.mp3"
             ensure_dir("outputs/videos")
             path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark)
+
             if path and os.path.exists(path):
                 st.video(path)
                 st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path))
 
+else:
+    st.info("Please enter a prompt to begin.")
