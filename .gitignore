@@ -1,0 +1,36 @@
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.log
+
+# Virtual env
+.venv/
+venv/
+ENV/
+env/
+
+# Environment secrets
+.env
+
+# Streamlit cache
+.streamlit/
+.metadata/
+
+# Pytest cache
+.pytest_cache/
+
+# VS Code / PyCharm / IDE files
+.vscode/
+.idea/
+.project
+.pydevproject
+
+# RStudio / Mac / Windows artifacts
+.Rhistory
+.DS_Store
+Thumbs.db
+
+# Output folders
+outputs/

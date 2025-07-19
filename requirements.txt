@@ -1,0 +1,13 @@
+streamlit
+requests
+python-dotenv
+gtts
+moviepy==1.0.3
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+google-auth
+pillow==9.5.0
+googletrans==4.0.0-rc1 
+elevenlabs
+deep_translator
