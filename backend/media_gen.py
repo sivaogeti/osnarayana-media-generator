@@ -84,12 +84,15 @@ from elevenlabs import generate, save, Voice, VoiceSettings, set_api_key
 
 def generate_audio(prompt, output_path):
     try:
-        api_key = os.getenv("ELEVEN_API_KEY")
-        if not api_key:
-            print("❌ ELEVEN_API_KEY is missing from environment.")
-            return None
+        import streamlit as st
+        api_key = st.secrets["ELEVEN_API_KEY"]
+        #api_key = os.getenv("ELEVEN_API_KEY")
+        if api_key:
+            print(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
+        else:
+            print("❌ ELEVEN_API_KEY not found.")
 
-        print("🔑 ELEVEN_API_KEY loaded successfully.")
+        #print("🔑 ELEVEN_API_KEY loaded successfully.")
         set_api_key(api_key)
 
         print(f"🎙️ Generating audio for prompt: {prompt}")
