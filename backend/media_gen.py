@@ -79,15 +79,25 @@ def generate_image(prompt, file_tag, add_watermark=False):
         print(f"❌ Image generation failed: {e}")
         return use_fallback_image(prompt, add_watermark=add_watermark)
 
-def generate_audio(prompt, file_tag, voice="Aria"):
+def generate_audio(prompt, output_path):
     try:
-        audio = generate(text=prompt, voice=voice, model="eleven_monolingual_v1")
-        filename = f"outputs/audio/{sanitize_filename(prompt)}.mp3"
-        save(audio, filename)
-        return filename
+        set_api_key(os.getenv("ELEVEN_API_KEY"))
+        print("🟢 ElevenLabs API key loaded")
+
+        audio = generate(
+            text=prompt,
+            voice=Voice(
+                name="Aria",
+                settings=VoiceSettings(stability=0.5, similarity_boost=0.75)
+            )
+        )
+        save(audio, output_path)
+        print(f"✅ Audio saved to: {output_path}")
+        return output_path
     except Exception as e:
-        print(f"❌ Audio generation failed: {e}")
+        print(f"❌ Audio generation error: {e}")
         return None
+
 
 def generate_video(prompt, image_path, audio_path):
     try:
