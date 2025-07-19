@@ -88,8 +88,8 @@ if prompt:
                 except Exception as e:
                     st.error("⚠️ Audio generation crashed.")
                     st.write(f"Error: {str(e)}")
-            else:
-                st.warning("Please enter a prompt to generate audio.")
+        else:
+            st.warning("Please enter a prompt to generate audio.")
 
     
  
