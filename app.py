@@ -25,8 +25,15 @@ def ensure_dir(path):
 # --- Streamlit Page Config ---
 st.set_page_config(page_title="OSN Media Generator", layout="wide")
 
-# --- Theme Toggle ---
-dark_mode = st.toggle("🌙 Dark Mode", value=False)
+# ---------- Sidebar ----------
+with st.sidebar:
+    st.title("⚙️ Settings")
+    language_options = ['English', 'Telugu', 'Hindi']
+    prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
+    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)    
+    dark_mode = st.toggle("🌗 Dark Mode", value=False)
+    st.markdown("---")
+    st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
 st.markdown(
     """
     <style>
@@ -35,6 +42,8 @@ st.markdown(
     """ % ("#0E1117" if dark_mode else "#FFFFFF", "#FAFAFA" if dark_mode else "#000000"),
     unsafe_allow_html=True,
 )
+
+
 
 st.title("🎮 Welcome to OSN Media Generator")
 st.caption("Enter your media prompt")
@@ -85,6 +94,3 @@ if prompt:
             if path and os.path.exists(path):
                 st.video(path)
                 st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path))
-
-else:
-    st.info("Please enter a prompt to begin.")
