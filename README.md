@@ -40,6 +40,18 @@ cd osnarayana-media-generator
 	pip install -r requirements.txt
 
 ### 🔐 3. Add .env with API Keys
+a. 🎙️ ElevenLabs API Key (for Text-to-Speech)
+	Go to https://www.elevenlabs.io/
+	Create a free account.
+	Visit your Profile > API Keys
+	Click "Generate New Key" and copy it.
+
+b. 🖼️ Unsplash API Key (for Image Generation)
+	Go to https://unsplash.com/developers
+	Login and click "Your Apps" > "New Application"
+	Fill in app details (e.g., name: media-generator)
+	Once approved, you’ll get an Access Key.
+
 Create a .env file in the root directory:
 # ElevenLabs API Key
 ELEVEN_API_KEY=your_elevenlabs_api_key
