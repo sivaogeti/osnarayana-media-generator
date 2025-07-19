@@ -81,6 +81,10 @@ if prompt:
             audio_path = os.path.join("outputs/audio", f"{filename_prefix}.mp3")
     
             os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+
+            st.write("📂 Current working directory:", os.getcwd())
+            st.write("📄 Expected audio path:", audio_path)
+            st.write("📁 Directory exists:", os.path.exists(os.path.dirname(audio_path)))
     
             with st.spinner("Generating audio..."):
                 try:
