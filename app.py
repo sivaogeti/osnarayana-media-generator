@@ -74,22 +74,33 @@ if prompt:
     with tab2:
         if st.button("Generate Audio"):
             st.write("🔄 Audio generation started...")
+    
+            # Construct filename with sanitized prefix + timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename_prefix = re.sub(r'\W+', '_', prompt).lower()
+            audio_filename = f"{filename_prefix}_{timestamp}.mp3"
+            audio_path = os.path.join("outputs/audio", audio_filename)
+    
+            # Ensure output folder exists
+            os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+    
             with st.spinner("Generating audio..."):
-                audio_path = os.path.join("outputs/audio", f"{filename_prefix}.mp3")
-                print("📣 Calling generate_audio()...")  # <--- Add this line
                 try:
+                    print("📣 Calling generate_audio()...")
                     result_path = generate_audio(translated_prompt, audio_path)
-                    if result_path and os.path.exists(result_path):
-                        st.audio(result_path)
-                        st.success("Audio generation complete.")
-                    else:
-                        st.error("Audio generation failed.")
-                        st.write(f"🔍 File not found at: {audio_path}")
                 except Exception as e:
-                    st.error("⚠️ Audio generation crashed.")
-                    st.write(f"Error: {str(e)}")
-        else:
-            st.warning("Please enter a prompt to generate audio.")
+                    print(f"❌ Exception in generate_audio: {e}")
+                    result_path = None
+    
+            # If audio generated successfully
+            if result_path and os.path.exists(result_path):
+                st.audio(result_path)
+                with open(result_path, "rb") as f:
+                    st.download_button("Download Audio", f, file_name=os.path.basename(result_path), mime="audio/mpeg")
+            else:
+                st.warning("⚠️ Audio generation failed.")
+                st.text(f"🔍 File not found at: {audio_path}")
+    
 
     
  
