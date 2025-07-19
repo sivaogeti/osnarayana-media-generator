@@ -1,6 +1,7 @@
 # media_gen.py
 
 import os
+import streamlit as st
 import re
 import requests
 from PIL import Image, UnidentifiedImageError
@@ -45,7 +46,7 @@ def apply_watermark(image_path, watermark_path=WATERMARK_PATH):
         base.paste(watermark, (base.width - 110, base.height - 110), watermark)
         base.convert("RGB").save(image_path)
     except Exception as e:
-        print(f"❌ Watermarking failed: {e}")
+        st.write("❌ Watermarking failed: {e}")
 
 def use_fallback_image(prompt, add_watermark=False):
     try:
@@ -57,7 +58,7 @@ def use_fallback_image(prompt, add_watermark=False):
             apply_watermark(output_path)
         return output_path
     except UnidentifiedImageError:
-        print("❌ Could not open fallback image.")
+        st.write("❌ Could not open fallback image.")
         return None
 
 def generate_image(prompt, file_tag, add_watermark=False):
@@ -78,8 +79,8 @@ def generate_image(prompt, file_tag, add_watermark=False):
 
         return output_path
     except Exception as e:
-        print("🔁 Unsplash failed. Using fallback.")
-        print(f"❌ Image generation failed: {e}")
+        st.write("🔁 Unsplash failed. Using fallback.")
+        st.write("❌ Image generation failed: {e}")
         return use_fallback_image(prompt, add_watermark=add_watermark)
 
 def generate_audio(prompt, output_path):
@@ -87,14 +88,14 @@ def generate_audio(prompt, output_path):
         import streamlit as st
         api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
         if api_key:
-            print(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
+            st.write("✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
         else:
-            print("❌ ELEVEN_API_KEY not found.")
+            st.write("❌ ELEVEN_API_KEY not found.")
             return None
 
         set_api_key(api_key)
 
-        print(f"🎧 Generating audio for prompt: {prompt}")
+        st.write("🎧 Generating audio for prompt: {prompt}")
         audio = generate(
             text=prompt,
             voice=Voice(
@@ -103,12 +104,12 @@ def generate_audio(prompt, output_path):
             )
         )
         save(audio, output_path)
-        print(f"🔍 File exists after save? {os.path.exists(output_path)}")
-        print(f"✅ Audio saved successfully to {output_path}")
+        st.write("🔍 File exists after save? {os.path.exists(output_path)}")
+        st.write("✅ Audio saved successfully to {output_path}")
         return output_path
 
     except Exception as e:
-        print(f"❌ Exception during audio generation: {str(e)}")
+        st.write("❌ Exception during audio generation: {str(e)}")
         return None
 
 def generate_video(prompt, image_path, audio_path):
@@ -120,5 +121,5 @@ def generate_video(prompt, image_path, audio_path):
         video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac", verbose=False, logger=None)
         return output_path
     except Exception as e:
-        print(f"❌ Video generation failed: {e}")
+        st.write("❌ Video generation failed: {e}")
         return None
