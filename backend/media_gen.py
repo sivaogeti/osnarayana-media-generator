@@ -88,14 +88,14 @@ def generate_audio(prompt, output_path):
         import streamlit as st
         api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
         if api_key:
-            st.write("✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
+            st.write(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
         else:
             st.write("❌ ELEVEN_API_KEY not found.")
             return None
 
         set_api_key(api_key)
 
-        st.write("🎧 Generating audio for prompt: {prompt}")
+        st.write(f"🎧 Generating audio for prompt: {prompt}")
         audio = generate(
             text=prompt,
             voice=Voice(
@@ -104,12 +104,12 @@ def generate_audio(prompt, output_path):
             )
         )
         save(audio, output_path)
-        st.write("🔍 File exists after save? {os.path.exists(output_path)}")
-        st.write("✅ Audio saved successfully to {output_path}")
+        st.write(f"🔍 File exists after save? {os.path.exists(output_path)}")
+        st.write(f"✅ Audio saved successfully to {output_path}")
         return output_path
 
     except Exception as e:
-        st.write("❌ Exception during audio generation: {str(e)}")
+        st.write(f"❌ Exception during audio generation: {str(e)}")
         return None
 
 def generate_video(prompt, image_path, audio_path):
