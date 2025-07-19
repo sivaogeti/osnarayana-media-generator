@@ -8,7 +8,7 @@ from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from dotenv import load_dotenv
 from moviepy.editor import ImageClip, AudioFileClip
-from elevenlabs import Voice, VoiceSettings, generate_audio  # Updated imports
+from elevenlabs import generate, save, set_api_key
 from googletrans import Translator
 
 # Load env vars
@@ -97,7 +97,7 @@ def generate_image(prompt, file_tag, add_watermark=False):
         st.write(f"❌ Image generation failed: {e}")
         return use_fallback_image(prompt, add_watermark=add_watermark)
 
-def generate_audio(prompt, output_path, debug_mode=False):
+def generate_video(prompt, image_path, audio_path, output_path, add_watermark=False):
     try:
         api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
 
@@ -144,7 +144,7 @@ def generate_audio(prompt, output_path, debug_mode=False):
             st.write("🔁 Falling back to gTTS...")
         return generate_gtts_fallback(prompt, output_path)
 
-def generate_video(prompt, image_path, audio_path, output_path, add_watermark=False):
+def generate_video(prompt, image_path, audio_path):
     try:
         audio_clip = AudioFileClip(audio_path)
         image_clip = ImageClip(image_path).set_duration(audio_clip.duration).resize(height=720)
