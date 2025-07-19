@@ -92,33 +92,41 @@ def generate_image(prompt, file_tag, add_watermark=False):
         return use_fallback_image(prompt, add_watermark=add_watermark)
 
 def generate_audio(prompt, output_path):
-    try:
-        import streamlit as st
-        from elevenlabs import set_api_key, generate, save, Voice, VoiceSettings
-        import os
+    import streamlit as st
+    import os
 
+    try:
+        from elevenlabs import set_api_key, generate, save
         api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
+
+        st.write(f"📂 Current working directory: {os.getcwd()}")
+        st.write(f"📄 Expected audio path: {output_path}")
+        st.write(f"📁 Directory exists: {os.path.isdir(os.path.dirname(output_path))}")
+        
         if api_key:
             st.write(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
             set_api_key(api_key)
+
+            st.write(f"🎧 Generating audio for prompt: {prompt}")
+
+            try:
+                # 💥 This might raise an exception
+                audio = generate(
+                    text=prompt,
+                    voice="Aria",
+                    model="eleven_monolingual_v1"
+                )
+                save(audio, output_path)
+
+                st.write(f"🔍 File exists after save? {os.path.exists(output_path)}")
+                st.write(f"✅ Audio saved successfully to {output_path}")
+                return output_path
+            except Exception as e:
+                st.write(f"⚠️ ElevenLabs failed: {str(e)}")
+                st.write("🔁 Falling back to gTTS...")
+                return generate_gtts_fallback(prompt, output_path)
         else:
             st.write("❌ ELEVEN_API_KEY not found. Falling back to gTTS.")
-            return generate_gtts_fallback(prompt, output_path)
-
-        st.write(f"🎧 Generating audio for prompt: {prompt}")
-        try:
-            audio = generate(
-                text=prompt,
-                voice="Aria",  # Updated: directly using string ID or name
-                model="eleven_monolingual_v1"
-            )
-            save(audio, output_path)
-            st.write(f"🔍 File exists after save? {os.path.exists(output_path)}")
-            st.write(f"✅ Audio saved successfully to {output_path}")
-            return output_path
-        except Exception as e:
-            st.write(f"⚠️ ElevenLabs failed: {str(e)}")
-            st.write("🔁 Falling back to gTTS...")
             return generate_gtts_fallback(prompt, output_path)
 
     except Exception as e:
