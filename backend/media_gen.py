@@ -97,7 +97,7 @@ def generate_image(prompt, file_tag, add_watermark=False):
         st.write(f"❌ Image generation failed: {e}")
         return use_fallback_image(prompt, add_watermark=add_watermark)
 
-def generate_video(prompt, image_path, audio_path, output_path, add_watermark=False):
+def generate_audio(prompt, output_path, debug_mode=False):
     try:
         api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
 
