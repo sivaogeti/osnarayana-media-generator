@@ -80,7 +80,7 @@ if prompt:
                 print(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
             else:
                 print("❌ ELEVEN_API_KEY not found.")
-                return None
+                
     
             set_api_key(api_key)
 
