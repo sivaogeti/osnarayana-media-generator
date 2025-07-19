@@ -99,7 +99,7 @@ def generate_audio(prompt, output_path):
         audio = generate(
             text=prompt,
             voice=Voice(
-                name="Aria",
+                voice_id="21m00Tcm4TlvDq8ikWAM",  # Aria's official voice ID
                 settings=VoiceSettings(stability=0.5, similarity_boost=0.75)
             )
         )
