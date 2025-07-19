@@ -72,14 +72,20 @@ if prompt:
     # ---------- Audio Generation ----------
     with tab2:
         if st.button("Generate Audio"):
-            with st.spinner("Generating audio..."):
-                audio_path = generate_audio(translated_prompt, filename_prefix)
-            if audio_path and os.path.exists(audio_path):  # pylint: disable=no-member
-                st.audio(audio_path)
-                with open(audio_path, "rb") as f:
-                    st.download_button("Download Audio", f, file_name=os.path.basename(audio_path), mime="audio/mpeg")
-            else:
-                st.warning("⚠️ Audio generation failed.")
+        st.write("🔄 Audio generation started...")
+        with st.spinner("Generating audio..."):
+            audio_path = os.path.join("outputs/audio", f"{file_name}.mp3")
+            try:
+                result_path = generate_audio(prompt, audio_path)
+                if result_path and os.path.exists(result_path):
+                    st.audio(result_path)
+                    st.success("Audio generation complete.")
+                else:
+                    st.error("Audio generation failed.")
+                    st.write(f"🔍 File not found at: {audio_path}")
+            except Exception as e:
+                st.error("⚠️ Audio generation crashed.")
+                st.write(f"Error: {str(e)}")
 
     # ---------- Video Generation ----------
     with tab3:
