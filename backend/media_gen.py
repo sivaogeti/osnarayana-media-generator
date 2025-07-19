@@ -1,14 +1,14 @@
 # media_gen.py
 
 import os
-import streamlit as st
 import re
+import streamlit as st
 import requests
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from dotenv import load_dotenv
-from elevenlabs import generate, save, Voice, VoiceSettings, set_api_key
 from moviepy.editor import ImageClip, AudioFileClip
+from elevenlabs import generate, save, Voice, VoiceSettings, set_api_key
 from googletrans import Translator
 
 # Load environment variables
@@ -19,12 +19,6 @@ OUTPUT_DIR = "outputs"
 DEFAULT_IMAGE = "assets/fallback.jpg"
 WATERMARK_PATH = "assets/logo_watermark.png"
 UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
-ELEVEN_API_KEY = os.getenv("ELEVEN_API_KEY")
-
-# Set ElevenLabs API key
-if not ELEVEN_API_KEY:
-    raise ValueError("ELEVEN_API_KEY is not set. Please check your .env file.")
-set_api_key(ELEVEN_API_KEY)
 
 # Ensure output folders exist
 os.makedirs("outputs/audio", exist_ok=True)
@@ -46,7 +40,7 @@ def apply_watermark(image_path, watermark_path=WATERMARK_PATH):
         base.paste(watermark, (base.width - 110, base.height - 110), watermark)
         base.convert("RGB").save(image_path)
     except Exception as e:
-        st.write("❌ Watermarking failed: {e}")
+        st.write(f"❌ Watermarking failed: {e}")
 
 def use_fallback_image(prompt, add_watermark=False):
     try:
@@ -80,12 +74,11 @@ def generate_image(prompt, file_tag, add_watermark=False):
         return output_path
     except Exception as e:
         st.write("🔁 Unsplash failed. Using fallback.")
-        st.write("❌ Image generation failed: {e}")
+        st.write(f"❌ Image generation failed: {e}")
         return use_fallback_image(prompt, add_watermark=add_watermark)
 
 def generate_audio(prompt, output_path):
     try:
-        import streamlit as st
         api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
         if api_key:
             st.write(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
@@ -99,7 +92,7 @@ def generate_audio(prompt, output_path):
         audio = generate(
             text=prompt,
             voice=Voice(
-                voice_id="21m00Tcm4TlvDq8ikWAM",  # Aria's official voice ID
+                voice_id="21m00Tcm4TlvDq8ikWAM",  # Aria voice ID
                 settings=VoiceSettings(stability=0.5, similarity_boost=0.75)
             )
         )
@@ -121,5 +114,5 @@ def generate_video(prompt, image_path, audio_path):
         video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac", verbose=False, logger=None)
         return output_path
     except Exception as e:
-        st.write("❌ Video generation failed: {e}")
+        st.write(f"❌ Video generation failed: {e}")
         return None
