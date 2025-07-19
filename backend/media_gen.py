@@ -103,6 +103,7 @@ def generate_audio(prompt, output_path):
             )
         )
         save(audio, output_path)
+        print(f"🔍 File exists after save? {os.path.exists(output_path)}")
         print(f"✅ Audio saved successfully to {output_path}")
         return output_path
 
