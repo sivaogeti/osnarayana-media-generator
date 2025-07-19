@@ -74,15 +74,7 @@ if prompt:
     with tab2:
         if st.button("Generate Audio"):
             st.write("🔄 Audio generation started...")
-            import streamlit as st
-            api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
-            if api_key:
-                st.write("✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
-            else:
-                st.write("❌ ELEVEN_API_KEY not found.")
-                
-    
-            set_api_key(api_key)
+            
 
             audio_path = os.path.join("outputs/audio", f"{filename_prefix}.mp3")
             os.makedirs(os.path.dirname(audio_path), exist_ok=True)
