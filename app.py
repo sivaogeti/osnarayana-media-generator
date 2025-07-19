@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from datetime import datetime
-from backend.media_gen import generate_audio, generate_image, generate_video
+from media_gen import generate_audio, generate_image, generate_video
 from googletrans import Translator
 
 # --- Helper Functions ---
@@ -78,14 +78,10 @@ if prompt:
     with tab3:
         if st.button("Generate Video"):
             video_path = f"outputs/videos/{safe_prompt}.mp4"
-            image_path = f"outputs/images/{safe_prompt}.jpg"
-            audio_path = f"outputs/audio/{safe_prompt}.mp3"
             ensure_dir("outputs/videos")
-            path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark)
-
+            path = generate_video(translated_prompt, video_path, add_watermark)
             if path and os.path.exists(path):
                 st.video(path)
                 st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path))
-
 else:
     st.info("Please enter a prompt to begin.")
