@@ -79,11 +79,20 @@ def generate_image(prompt, file_tag, add_watermark=False):
         print(f"❌ Image generation failed: {e}")
         return use_fallback_image(prompt, add_watermark=add_watermark)
 
+import os
+from elevenlabs import generate, save, Voice, VoiceSettings, set_api_key
+
 def generate_audio(prompt, output_path):
     try:
-        set_api_key(os.getenv("ELEVEN_API_KEY"))
-        print("🟢 ElevenLabs API key loaded")
+        api_key = os.getenv("ELEVEN_API_KEY")
+        if not api_key:
+            print("❌ ELEVEN_API_KEY is missing from environment.")
+            return None
 
+        print("🔑 ELEVEN_API_KEY loaded successfully.")
+        set_api_key(api_key)
+
+        print(f"🎙️ Generating audio for prompt: {prompt}")
         audio = generate(
             text=prompt,
             voice=Voice(
@@ -92,11 +101,13 @@ def generate_audio(prompt, output_path):
             )
         )
         save(audio, output_path)
-        print(f"✅ Audio saved to: {output_path}")
+        print(f"✅ Audio saved successfully to {output_path}")
         return output_path
+
     except Exception as e:
-        print(f"❌ Audio generation error: {e}")
+        print(f"❌ Exception during audio generation: {str(e)}")
         return None
+
 
 
 def generate_video(prompt, image_path, audio_path):
