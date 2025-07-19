@@ -1,13 +1,11 @@
+streamlit
+python-dotenv
+requests
 deep_translator
 elevenlabs
 google-api-python-client
 google-auth
 google-auth-httplib2
 google-auth-oauthlib
-googletrans==4.0.0-rc1
-gtts
 moviepy==1.0.3
 Pillow==10.2.0
-python-dotenv
-requests
-streamlit
