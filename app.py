@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from datetime import datetime
-from media_gen import generate_audio, generate_image, generate_video
+from backend.media_gen import generate_audio, generate_image, generate_video
 from googletrans import Translator
 
 # --- Helper Functions ---
