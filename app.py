@@ -9,6 +9,7 @@ from PIL import UnidentifiedImageError
 from backend.media_gen import generate_image, generate_audio, generate_video
 from backend.media_gen import sanitize_filename, translate_text
 import re
+from elevenlabs import generate, save, Voice, VoiceSettings, set_api_key
 
 load_dotenv()
 
