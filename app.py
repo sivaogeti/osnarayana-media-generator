@@ -72,13 +72,24 @@ if prompt:
     # ---------- Audio Generation ----------
     
     with tab2:
-        if st.button("Generate Audio"):
-            st.write("🔄 Audio generation started...")
-            with st.spinner("Generating audio..."):
-                audio_path = os.path.join("outputs/audio", f"{filename_prefix}.mp3")
-                print("📣 Calling generate_audio()...")  # <--- Add this line
-                try:
-                    result_path = generate_audio(translated_prompt, audio_path)
+    if st.button("Generate Audio"):
+        st.write("🔄 Audio generation started...")
+        with st.spinner("Generating audio..."):
+            audio_path = os.path.join("outputs/audio", f"{filename_prefix}.mp3")
+            print("📣 Calling generate_audio()...")  # <--- Add this line
+            try:
+                result_path = generate_audio(translated_prompt, audio_path)
+                if result_path and os.path.exists(result_path):
+                    st.audio(result_path)
+                    st.success("Audio generation complete.")
+                else:
+                    st.error("Audio generation failed.")
+                    st.write(f"🔍 File not found at: {audio_path}")
+            except Exception as e:
+                st.error("⚠️ Audio generation crashed.")
+                st.write(f"Error: {str(e)}")
+        else:
+            st.warning("Please enter a prompt to generate audio.")
 
     
  
