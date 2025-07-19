@@ -30,8 +30,7 @@ with st.sidebar:
     st.title("⚙️ Settings")
     language_options = ['English', 'Telugu', 'Hindi']
     prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
-    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
-    add_watermark = st.checkbox("Add watermark/logo", value=True)
+    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)    
     dark_mode = st.toggle("🌗 Dark Mode", value=False)
     st.markdown("---")
     st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
