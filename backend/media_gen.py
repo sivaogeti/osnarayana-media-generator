@@ -8,7 +8,7 @@ from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from dotenv import load_dotenv
 from moviepy.editor import ImageClip, AudioFileClip
-from elevenlabs import generate, save, set_api_key
+from elevenlabs import set_api_key, Voice, VoiceSettings, generate_audio  # Updated import
 from googletrans import Translator
 
 # Load env vars
