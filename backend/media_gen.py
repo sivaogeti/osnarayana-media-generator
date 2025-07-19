@@ -54,6 +54,20 @@ def use_fallback_image(prompt, add_watermark=False):
     except UnidentifiedImageError:
         st.write("❌ Could not open fallback image.")
         return None
+        
+def generate_gtts_fallback(prompt, output_path):
+    try:
+        from gtts import gTTS
+        import streamlit as st
+
+        tts = gTTS(text=prompt, lang="en")
+        tts.save(output_path)
+        st.write(f"✅ Fallback audio (gTTS) saved to {output_path}")
+        return output_path
+    except Exception as e:
+        st.write(f"❌ gTTS fallback failed: {str(e)}")
+        return None
+
 
 def generate_image(prompt, file_tag, add_watermark=False):
     try:
@@ -79,31 +93,39 @@ def generate_image(prompt, file_tag, add_watermark=False):
 
 def generate_audio(prompt, output_path):
     try:
+        import streamlit as st
+        from elevenlabs import set_api_key, generate, save, Voice, VoiceSettings
+        import os
+
         api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
         if api_key:
             st.write(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
+            set_api_key(api_key)
         else:
-            st.write("❌ ELEVEN_API_KEY not found.")
-            return None
-
-        set_api_key(api_key)
+            st.write("❌ ELEVEN_API_KEY not found. Falling back to gTTS.")
+            return generate_gtts_fallback(prompt, output_path)
 
         st.write(f"🎧 Generating audio for prompt: {prompt}")
-        audio = generate(
-            text=prompt,
-            voice=Voice(
-                voice_id="21m00Tcm4TlvDq8ikWAM",  # Aria voice ID
-                settings=VoiceSettings(stability=0.5, similarity_boost=0.75)
+        try:
+            audio = generate(
+                text=prompt,
+                voice="Aria",  # Updated: directly using string ID or name
+                model="eleven_monolingual_v1"
             )
-        )
-        save(audio, output_path)
-        st.write(f"🔍 File exists after save? {os.path.exists(output_path)}")
-        st.write(f"✅ Audio saved successfully to {output_path}")
-        return output_path
+            save(audio, output_path)
+            st.write(f"🔍 File exists after save? {os.path.exists(output_path)}")
+            st.write(f"✅ Audio saved successfully to {output_path}")
+            return output_path
+        except Exception as e:
+            st.write(f"⚠️ ElevenLabs failed: {str(e)}")
+            st.write("🔁 Falling back to gTTS...")
+            return generate_gtts_fallback(prompt, output_path)
 
     except Exception as e:
-        st.write(f"❌ Exception during audio generation: {str(e)}")
-        return None
+        st.write(f"❌ Exception during audio generation setup: {str(e)}")
+        st.write("🔁 Falling back to gTTS...")
+        return generate_gtts_fallback(prompt, output_path)
+
 
 def generate_video(prompt, image_path, audio_path):
     try:
