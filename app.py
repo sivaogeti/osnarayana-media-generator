@@ -77,9 +77,9 @@ if prompt:
             import streamlit as st
             api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
             if api_key:
-                print(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
+                st.write("✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
             else:
-                print("❌ ELEVEN_API_KEY not found.")
+                st.write("❌ ELEVEN_API_KEY not found.")
                 
     
             set_api_key(api_key)
