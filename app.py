@@ -25,8 +25,16 @@ def ensure_dir(path):
 # --- Streamlit Page Config ---
 st.set_page_config(page_title="OSN Media Generator", layout="wide")
 
-# --- Theme Toggle ---
-dark_mode = st.toggle("🌙 Dark Mode", value=False)
+# ---------- Sidebar ----------
+with st.sidebar:
+    st.title("⚙️ Settings")
+    language_options = ['English', 'Telugu', 'Hindi']
+    prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
+    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
+    add_watermark = st.checkbox("Add watermark/logo", value=True)
+    dark_mode = st.toggle("🌗 Dark Mode", value=False)
+    st.markdown("---")
+    st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
 st.markdown(
     """
     <style>
