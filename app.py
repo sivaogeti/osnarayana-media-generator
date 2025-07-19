@@ -91,5 +91,3 @@ if prompt:
             if path and os.path.exists(path):
                 st.video(path)
                 st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path))
-else:
-    st.info("Please enter a prompt to begin.")
