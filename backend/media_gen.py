@@ -1,126 +1,115 @@
-import os
-import re
-import requests
-from PIL import Image, UnidentifiedImageError
-from io import BytesIO
-from dotenv import load_dotenv
-from elevenlabs import generate, save, set_api_key
-from moviepy.editor import ImageClip, AudioFileClip
+# app.py
 
-# Load environment variables
+"""Streamlit app for generating media (image, audio, video) using prompts."""
+
+import os
+import streamlit as st
+from dotenv import load_dotenv
+from PIL import UnidentifiedImageError
+from backend.media_gen import generate_image, generate_audio, generate_video
+from backend.media_gen import sanitize_filename, translate_text
+import re
+
 load_dotenv()
 
-# Config
-OUTPUT_DIR = "outputs"
-DEFAULT_IMAGE = "assets/fallback.jpg"
-WATERMARK_PATH = "assets/logo_watermark.png"
-UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
-ELEVEN_API_KEY = os.getenv("ELEVEN_API_KEY")
+st.set_page_config(page_title="OSN Media Studio", layout="wide", page_icon="🎮")
 
-# Set ElevenLabs API key
-if not ELEVEN_API_KEY:
-    raise ValueError("ELEVEN_API_KEY is not set. Please check your .env file.")
-set_api_key(ELEVEN_API_KEY)
+# ---------- Sidebar ----------
+with st.sidebar:
+    st.title("⚙️ Settings")
+    language_options = ['English', 'Telugu', 'Hindi']
+    prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
+    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
+    add_watermark = st.checkbox("Add watermark/logo", value=True)
+    dark_mode = st.toggle("🌗 Dark Mode", value=False)
+    st.markdown("---")
+    st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
 
-# Ensure output folders exist
-os.makedirs("outputs/audio", exist_ok=True)
-os.makedirs("outputs/images", exist_ok=True)
-os.makedirs("outputs/videos", exist_ok=True)
+if dark_mode:
+    st.markdown(
+        """
+        <style>
+        body {
+            background-color: #0e1117;
+            color: white;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-def translate_text(text, target_lang):
-    translator = Translator()
-    translated = translator.translate(text, dest=target_lang)
-    return translated.text
+# ---------- Title ----------
+st.title("🎮 Welcome to OSN Media Generator")
 
-def sanitize_filename(text):
-    return re.sub(r'\W+', '_', text).lower()[:50]
+# ---------- Prompt Input ----------
+prompt = st.text_input("Enter your media prompt", max_chars=200)
 
-def apply_watermark(image_path, watermark_path=WATERMARK_PATH):
-    try:
-        base = Image.open(image_path).convert("RGBA")
-        watermark = Image.open(watermark_path).convert("RGBA").resize((100, 100))
-        base.paste(watermark, (base.width - 110, base.height - 110), watermark)
-        base.convert("RGB").save(image_path)
-    except Exception as e:
-        print(f"❌ Watermarking failed: {e}")
+if prompt:
+    translated_prompt = prompt
+    if prompt_lang != target_lang:
+        translated_prompt = translate_text(prompt, target_lang)
 
-def use_fallback_image(prompt, add_watermark=False):
-    try:
-        fallback_path = DEFAULT_IMAGE
-        output_path = f"outputs/images/{sanitize_filename(prompt)}.jpg"
-        with Image.open(fallback_path) as img:
-            img.save(output_path)
-        if add_watermark:
-            apply_watermark(output_path)
-        return output_path
-    except UnidentifiedImageError:
-        print("❌ Could not open fallback image.")
-        return None
+    filename_prefix = sanitize_filename(translated_prompt)
 
-def generate_image(prompt, file_tag, add_watermark=False):
-    try:
-        url = f"https://api.unsplash.com/photos/random?query={requests.utils.quote(prompt)}&client_id={UNSPLASH_ACCESS_KEY}"
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        image_url = response.json()["urls"]["regular"]
-        image_response = requests.get(image_url, timeout=10)
-        image_response.raise_for_status()
+    # ---------- Tabs ----------
+    tab1, tab2, tab3 = st.tabs(["🖼️ Image", "🔊 Audio", "🎞️ Video"])
 
-        output_path = f"outputs/images/{sanitize_filename(prompt)}.jpg"
-        img = Image.open(BytesIO(image_response.content))
-        img.convert("RGB").save(output_path)
+    # ---------- Image Generation ----------
+    with tab1:
+        if st.button("Generate Image"):
+            with st.spinner("Generating image..."):
+                image_path = generate_image(translated_prompt, filename_prefix, add_watermark)
+            if image_path and os.path.exists(image_path):
+                try:
+                    st.image(image_path, caption="Generated Image", use_container_width=True)
+                    with open(image_path, "rb") as f:
+                        st.download_button("Download Image", f, file_name=os.path.basename(image_path), mime="image/png")
+                except UnidentifiedImageError:
+                    st.error("❌ Error displaying image. Please try with a different prompt or disable watermark.")
+            else:
+                st.warning("⚠️ Image generation failed. Please try again.")
 
-        if add_watermark:
-            apply_watermark(output_path)
+    # ---------- Audio Generation ----------
+    with tab2:
+        if st.button("Generate Audio"):
+            st.write("🔄 Audio generation started...")
 
-        return output_path
-    except Exception as e:
-        print("🔁 Unsplash failed. Using fallback.")
-        print(f"❌ Image generation failed: {e}")
-        return use_fallback_image(prompt, add_watermark=add_watermark)
+            audio_path = os.path.join("outputs/audio", f"{filename_prefix}.mp3")
+            os.makedirs(os.path.dirname(audio_path), exist_ok=True)
 
-import os
-from elevenlabs import generate, save, Voice, VoiceSettings, set_api_key
+            st.write("📂 Current working directory:", os.getcwd())
+            st.write("📄 Expected audio path:", audio_path)
+            st.write("📁 Directory exists:", os.path.exists(os.path.dirname(audio_path)))
 
-def generate_audio(prompt, output_path):
-    try:
-        import streamlit as st
-        api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
-        if api_key:
-            print(f"✅ ELEVEN_API_KEY loaded: {api_key[:4]}...****")
-        else:
-            print("❌ ELEVEN_API_KEY not found.")
-            return None
+            with st.spinner("Generating audio..."):
+                try:
+                    result_path = generate_audio(translated_prompt, audio_path)
+                except Exception as e:
+                    st.error("⚠️ Audio generation crashed.")
+                    st.write(f"Error: {str(e)}")
+                    result_path = None
 
-        #print("🔑 ELEVEN_API_KEY loaded successfully.")
-        set_api_key(api_key)
+            if result_path and os.path.exists(result_path):
+                st.audio(result_path)
+                with open(result_path, "rb") as f:
+                    st.download_button("Download Audio", f, file_name=os.path.basename(result_path), mime="audio/mpeg")
+            else:
+                st.warning("⚠️ Audio generation failed.")
+                st.text(f"🔍 File not found at: {audio_path}")
 
-        print(f"🎙️ Generating audio for prompt: {prompt}")
-        audio = generate(
-            text=prompt,
-            voice=Voice(
-                name="Aria",
-                settings=VoiceSettings(stability=0.5, similarity_boost=0.75)
-            )
-        )
-        save(audio, output_path)
-        print(f"✅ Audio saved successfully to {output_path}")
-        return output_path
-
-    except Exception as e:
-        print(f"❌ Exception during audio generation: {str(e)}")
-        return None
-
-
-
-def generate_video(prompt, image_path, audio_path):
-    try:
-        audio_clip = AudioFileClip(audio_path)
-        image_clip = ImageClip(image_path).set_duration(audio_clip.duration).resize(height=720)
-        video = image_clip.set_audio(audio_clip)
-        output_path = f"outputs/videos/{sanitize_filename(prompt)}.mp4"
-        video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac", verbose=False, logger=None)
-        return output_path
-    except Exception as e:
-        print(f"❌ Video generation failed: {e}")
-        return None
+    # ---------- Video Generation ----------
+    with tab3:
+        if st.button("Generate Video"):
+            with st.spinner("Generating video..."):
+                image_path = f"outputs/images/{sanitize_filename(translated_prompt)}.jpg"
+                audio_path = f"outputs/audio/{sanitize_filename(translated_prompt)}.mp3"
+                if os.path.exists(image_path) and os.path.exists(audio_path):
+                    video_path = generate_video(translated_prompt, image_path, audio_path)
+                    if video_path and os.path.exists(video_path):
+                        st.video(video_path)
+                        with open(video_path, "rb") as f:
+                            st.download_button("Download Video", f, file_name=os.path.basename(video_path), mime="video/mp4")
+                    else:
+                        st.error("❌ Video generation failed.")
+                else:
+                    st.warning("⚠️ Please generate both image and audio first.")
