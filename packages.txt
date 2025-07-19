@@ -1,0 +1,3 @@
+ffmpeg
+libjpeg-dev
+zlib1g-dev
