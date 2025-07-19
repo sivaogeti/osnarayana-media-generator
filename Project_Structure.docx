@@ -1,0 +1,14 @@
+osnarayana-media-generator/
+├── app.py                  # 📋 Main Streamlit UI and logic
+├── backend/
+│   └── media_gen.py        # 🧠 Media generation logic
+├── outputs/                # 💾 Generated media files
+│   ├── images/
+│   ├── audio/
+│   └── videos/
+├── assets/                 # 🖼️ Logo, background images
+├── .env                    # 🔐 API keys (excluded via .gitignore)
+├── .gitignore              # 📄 Git ignore rules
+├── requirements.txt        # 📦 Dependencies
+├── README.md               # 📘 This file
+└── PRIVACY_POLICY.md       # 🔐 Privacy policy
