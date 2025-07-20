@@ -66,7 +66,7 @@ with st.expander("⚙️ Settings", expanded=False):
     #target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
     #target_lang = st.selectbox("🌐 Output Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
     #-------------------------Displaying all supported languages--------------------------------
-    target_lang = st.selectbox("🌐 Output Language", ["English", "Hindi", "Telugu", "Tamil", "Kannada", "Malayalam", "Marathi", "Gujarathi", 'Punjabi (Gurmukhi)': "pa" , "Urdu", "Bengali" ], index=0)
+    target_lang = st.selectbox("🌐 Output Language", ["English", "Hindi", "Telugu", "Tamil", "Kannada", "Malayalam", "Marathi", "Gujarathi", "Punjabi (Gurmukhi)": "pa" , "Urdu", "Bengali" ], index=0)
 
 
     # Optional manual toggle fallback (not auto, just UI helper)
