@@ -111,11 +111,27 @@ if prompt:
             video_path = f"outputs/videos/{safe_prompt}.mp4"
             image_path = f"outputs/images/{safe_prompt}.jpg"
             audio_path = f"outputs/audio/{safe_prompt}.mp3"
+    
             ensure_dir("outputs/videos")
-            path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark, dark_mode)
-            if path and os.path.exists(path):
-                st.video(path)
-                st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path), mime="video/mp4")
+    
+            # Ensure audio and image exist before generating video
+            if not os.path.exists(image_path):
+                st.info("🎨 Generating image as it doesn't exist...")
+                image_path = generate_image(translated_prompt, image_path, add_watermark, dark_mode)
+    
+            if not os.path.exists(audio_path):
+                st.info("🎤 Generating audio as it doesn't exist...")
+                audio_path = generate_audio(translated_prompt, audio_path, debug_mode)
+    
+            # Proceed only if both files exist
+            if os.path.exists(image_path) and os.path.exists(audio_path):
+                path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark, dark_mode)
+                if path and os.path.exists(path):
+                    st.video(path)
+                    st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path), mime="video/mp4")
+            else:
+                st.error("❌ Could not generate image/audio required for video.")
+
 
 
 
