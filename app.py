@@ -8,7 +8,7 @@ from googletrans import Translator
 
 
 # --- Helper Functions ---
-
+LANGUAGE_CODES = {v: k for k, v in tts_langs().items()}
 LANGUAGE_CODES = dict(sorted(LANGUAGE_CODES.items()))  # Alphabetical by language name
 #LANGUAGE_CODES = {
 #    "English": "en",
