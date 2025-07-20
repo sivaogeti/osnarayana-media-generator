@@ -50,7 +50,7 @@ with st.expander("⚙️ Settings", expanded=False):
     #-------- Merging Prompt Language + Translate To Language into One Dropdown-----------
     #prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
     #target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
-    target_lang = st.selectbox("🌐 Language to Generate In", ["English", "Telugu", "Hindi", "Tamil"], index=0)
+    target_lang = st.selectbox("🌐 Output Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
 
 
     # Optional manual toggle fallback (not auto, just UI helper)
@@ -85,6 +85,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Inline Toggles for selection of Language
+lang = st.selectbox("🌐 Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
+
 # --- Prompt Section ---
 st.caption("Enter your media prompt")
 
@@ -92,8 +95,10 @@ prompt = st.text_input("📝 Prompt", placeholder="e.g., A farmer working in the
 
 # Inline Toggles
 debug_mode = st.toggle("🪛 Show Debug Logs", value=False)
-add_watermark = st.checkbox("🌊 Add watermark/logo (optional)", value=False)
-lang = st.selectbox("🌐 Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
+#Making watermark compulsory
+#add_watermark = st.checkbox("🌊 Add watermark/logo (optional)", value=False)
+add_watermark = True
+
 
 # ---------- Tabs for Media ----------
 tab1, tab2, tab3 = st.tabs(["🖼️ Image", "🔊 Audio", "🎞️ Video"])
