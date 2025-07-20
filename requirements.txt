@@ -11,3 +11,4 @@ pillow==9.5.0
 googletrans==4.0.0-rc1 
 elevenlabs
 deep_translator
+gtts.lang
