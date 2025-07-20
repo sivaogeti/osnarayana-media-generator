@@ -116,11 +116,13 @@ if prompt:
     
             # Ensure audio and image exist before generating video
             if not os.path.exists(image_path):
-                st.info("🎨 Generating image as it doesn't exist...")
+                if debug_mode:
+                    st.info("🎨 Generating image as it doesn't exist...")
                 image_path = generate_image(translated_prompt, image_path, add_watermark, dark_mode)
     
             if not os.path.exists(audio_path):
-                st.info("🎤 Generating audio as it doesn't exist...")
+                if debug_mode:
+                    st.info("🎤 Generating audio as it doesn't exist...")
                 audio_path = generate_audio(translated_prompt, audio_path, debug_mode)
     
             # Proceed only if both files exist
