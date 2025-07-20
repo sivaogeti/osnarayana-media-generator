@@ -72,8 +72,9 @@ if prompt:
             ensure_dir("outputs/images")
             path = generate_image(translated_prompt, image_path, add_watermark)
             if path and os.path.exists(path):
-                st.image(path, caption="Generated Image", use_container_width=True)
-                st.download_button("📥 Download Image", data=open(path, "rb"), file_name=os.path.basename(path))
+                st.image(path, caption="Generated Image", use_container_width=True)                
+                st.download_button("📥 Download Image", data=open(path, "rb"), file_name=os.path.basename(path), mime="image/png")
+
 
     with tab2:
         if st.button("Generate Audio"):
@@ -81,8 +82,9 @@ if prompt:
             ensure_dir("outputs/audio")
             path = generate_audio(translated_prompt, audio_path, debug_mode)
             if path and os.path.exists(path):
-                st.audio(path)
-                st.download_button("📥 Download Audio", data=open(path, "rb"), file_name=os.path.basename(path))
+                st.audio(path)                
+                st.download_button("📥 Download Audio", data=open(path, "rb"), file_name=os.path.basename(path), mime="audio/mpeg")
+
 
     with tab3:
         if st.button("Generate Video"):
@@ -92,5 +94,6 @@ if prompt:
             ensure_dir("outputs/videos")
             path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark)
             if path and os.path.exists(path):
-                st.video(path)
-                st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path))
+                st.video(path)                
+                st.download_button("📥 Download Audio", data=open(path, "rb"), file_name=os.path.basename(path), mime="video/mp4")
+
