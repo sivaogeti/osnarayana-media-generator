@@ -25,6 +25,10 @@ def ensure_dir(path):
 # --- Streamlit Page Config ---
 st.set_page_config(page_title="OSN Media Generator", layout="wide")
 
+# ---------- Header ----------
+st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
+st.title("🎮 Welcome to OSN Media Generator")
+
 # ---------- Inline Settings ----------
 with st.expander("⚙️ Settings", expanded=True):
     language_options = ['English', 'Telugu', 'Hindi']
@@ -32,7 +36,6 @@ with st.expander("⚙️ Settings", expanded=True):
     target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
     dark_mode = st.toggle("🌗 Dark Mode", value=False)
     st.markdown("---")
-    st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
 
 # Dark Mode Styling
 st.markdown(
@@ -45,12 +48,11 @@ st.markdown(
 )
 
 # ---------- Main UI ----------
-st.title("🎮 Welcome to OSN Media Generator")
 st.caption("Enter your media prompt")
 
 prompt = st.text_input("📝 Prompt", placeholder="e.g., A farmer working in the field", label_visibility="collapsed")
 
-# Inline Debug, Watermark, Lang Toggles
+# Inline Toggles
 debug_mode = st.toggle("🪛 Show Debug Logs", value=False)
 add_watermark = st.checkbox("🌊 Add watermark/logo (optional)", value=False)
 lang = st.selectbox("🌐 Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
