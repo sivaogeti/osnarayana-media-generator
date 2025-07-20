@@ -17,13 +17,13 @@ from googletrans import Translator
 #}
 
 # List only Indian language codes
-INDIAN_LANG_CODES = ["hi", "te", "ta", "kn", "ml", "mr", "gu", "pa", "ur", "bn"]
+INDIAN_LANG_CODES = ["en", "hi", "te", "ta", "kn", "ml", "mr", "gu", "pa", "ur", "bn"]
 
 # Get all available gTTS languages
 all_langs = tts_langs()
 
 # Filter only Indian languages
-INDIAN_LANGUAGES = {
+SUPPORTED_LANGUAGES = {
     f"{all_langs[code]} ({code})": code
     for code in INDIAN_LANG_CODES if code in all_langs
 }
@@ -64,7 +64,9 @@ with st.expander("⚙️ Settings", expanded=False):
     #-------- Merging Prompt Language + Translate To Language into One Dropdown-----------
     #prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
     #target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
-    target_lang = st.selectbox("🌐 Output Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
+    #target_lang = st.selectbox("🌐 Output Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
+    #-------------------------Displaying all supported languages--------------------------------
+    target_lang = st.selectbox("🌐 Output Language", ["English", "Hindi", "Telugu", "Tamil", "Kannada", "Malayalam", "Marathi", "Gujarathi", 'Punjabi (Gurmukhi)': "pa" , "Urdu", "Bengali" ], index=0)
 
 
     # Optional manual toggle fallback (not auto, just UI helper)
@@ -101,7 +103,7 @@ st.markdown("""
 
 # Inline Toggles for selection of Language
 #lang = st.selectbox("🌐 Choose Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
-selected_display = st.selectbox("🌐 Choose Language", list(INDIAN_LANGUAGES.keys()))
+selected_display = st.selectbox("🌐 Choose Language", list(SUPPORTED_LANGUAGES.keys()))
 
 # --- Prompt Section ---
 st.caption("Enter your media prompt")
@@ -140,7 +142,7 @@ if prompt:
                 ensure_dir("outputs/audio")
                 #lang_code = LANGUAGE_CODES.get(target_lang, "en")   
                 # Get language code
-                lang_code = INDIAN_LANGUAGES[selected_display]
+                lang_code = SUPPORTED_LANGUAGES[selected_display]
                 path = generate_audio(translated_prompt, audio_path, debug_mode, lang=lang_code)
                 if path and os.path.exists(path):
                     st.audio(path)
@@ -166,7 +168,7 @@ if prompt:
                         st.info("🎤 Generating audio as it doesn't exist...")                    
                     #lang_code = LANGUAGE_CODES.get(target_lang, "en")
                     # Get language code
-                    lang_code = INDIAN_LANGUAGES[selected_display]
+                    lang_code = SUPPORTED_LANGUAGES[selected_display]
                     audio_path = generate_audio(translated_prompt, audio_path, debug_mode, lang=lang_code)
         
                 # Proceed only if both files exist
