@@ -92,7 +92,7 @@ if prompt:
         if st.button("Generate Image"):
             image_path = f"outputs/images/{safe_prompt}.png"
             ensure_dir("outputs/images")
-            path = generate_image(translated_prompt, image_path, add_watermark)
+            path = generate_image(translated_prompt, image_path, add_watermark, dark_mode)
             if path and os.path.exists(path):
                 st.image(path, caption="Generated Image", use_container_width=True)
                 st.download_button("📥 Download Image", data=open(path, "rb"), file_name=os.path.basename(path), mime="image/png")
@@ -112,7 +112,7 @@ if prompt:
             image_path = f"outputs/images/{safe_prompt}.jpg"
             audio_path = f"outputs/audio/{safe_prompt}.mp3"
             ensure_dir("outputs/videos")
-            path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark)
+            path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark, dark_mode)
             if path and os.path.exists(path):
                 st.video(path)
                 st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path), mime="video/mp4")
