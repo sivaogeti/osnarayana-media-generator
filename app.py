@@ -95,5 +95,6 @@ if prompt:
             path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark)
             if path and os.path.exists(path):
                 st.video(path)                
-                st.download_button("📥 Download Audio", data=open(path, "rb"), file_name=os.path.basename(path), mime="video/mp4")
+                st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path), mime="video/mp4")
+
 
