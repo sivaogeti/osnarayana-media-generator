@@ -106,14 +106,17 @@ def generate_image(prompt, file_tag, add_watermark=False, dark_mode=False, debug
         return use_fallback_image(prompt, add_watermark=add_watermark)
 
 
-def generate_audio(prompt, output_path, debug_mode=False):
+# ✅ Updated generate_audio with proper language handling
+
+def generate_audio(prompt, output_path, debug_mode=False, lang="en"):
     try:
         api_key = os.getenv("ELEVEN_API_KEY") or st.secrets.get("ELEVEN_API_KEY", None)
 
-        if debug_mode:
-            st.write(f"📂 Current working directory: {os.getcwd()}")
-            st.write(f"📄 Expected audio path: {output_path}")
-            st.write(f"📁 Directory exists: {os.path.isdir(os.path.dirname(output_path))}")
+        # Use gTTS for non-English languages
+        if lang != "en":
+            if debug_mode:
+                st.write(f"🌐 Non-English language selected: {lang}. Using gTTS.")
+            return generate_gtts_fallback(prompt, output_path, debug_mode, lang=lang)
 
         if api_key:
             if debug_mode:
@@ -152,8 +155,7 @@ def generate_audio(prompt, output_path, debug_mode=False):
             st.write(f"❌ Exception during audio generation setup: {str(e)}")
             st.write("🔁 Falling back to gTTS...")
         return generate_gtts_fallback(prompt, output_path, debug_mode)
-
-
+  
 
 def generate_video(prompt, image_path, audio_path, output_path, add_watermark=False, dark_mode=False):
     try:
