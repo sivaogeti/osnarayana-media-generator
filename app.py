@@ -47,7 +47,7 @@ st.title("🎮 Welcome to OSN Media Generator")
 # --- Collapsed Settings ---
 with st.expander("⚙️ Settings", expanded=False):
     language_options = ['English', 'Telugu', 'Hindi']
-    // Merging Prompt Language + Translate To Language into One Dropdown
+    #-------- Merging Prompt Language + Translate To Language into One Dropdown-----------
     #prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
     #target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
     target_lang = st.selectbox("🌐 Language to Generate In", ["English", "Telugu", "Hindi", "Tamil"], index=0)
