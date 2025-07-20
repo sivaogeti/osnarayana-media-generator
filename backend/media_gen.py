@@ -63,20 +63,21 @@ def use_fallback_image(prompt, add_watermark=False):
         st.write("❌ Could not open fallback image.")
         return None
 
-def generate_gtts_fallback(prompt, output_path):
+def generate_gtts_fallback(prompt, output_path, debug_mode=False):
     try:
         from gtts import gTTS
         tts = gTTS(text=prompt, lang="en")
         tts.save(output_path)
         logging.info(f"gTTS fallback audio saved to {output_path}")
-        st.write(f"✅ Fallback audio (gTTS) saved to {output_path}")
+        if debug_mode:
+            st.write(f"✅ Fallback audio (gTTS) saved to {output_path}")
         return output_path
     except Exception as e:
         logging.error(f"gTTS fallback failed: {e}")
         st.write(f"❌ gTTS fallback failed: {str(e)}")
         return None
 
-def generate_image(prompt, file_tag, add_watermark=False, dark_mode=False):
+def generate_image(prompt, file_tag, add_watermark=False, dark_mode=False, debug_mode=False):
     try:
         # Enhance prompt if dark mode is enabled
         if dark_mode:
@@ -137,20 +138,20 @@ def generate_audio(prompt, output_path, debug_mode=False):
                 if debug_mode:
                     st.write(f"⚠️ ElevenLabs failed: {str(e)}")
                     st.write("🔁 Falling back to gTTS...")
-                return generate_gtts_fallback(prompt, output_path)
+                return generate_gtts_fallback(prompt, output_path, debug_mode)
 
         else:
             logging.warning("ELEVEN_API_KEY not found")
             if debug_mode:
                 st.write("❌ ELEVEN_API_KEY not found. Falling back to gTTS.")
-            return generate_gtts_fallback(prompt, output_path)
+            return generate_gtts_fallback(prompt, output_path, debug_mode)
 
     except Exception as e:
         logging.error(f"Exception during audio generation setup: {e}")
         if debug_mode:
             st.write(f"❌ Exception during audio generation setup: {str(e)}")
             st.write("🔁 Falling back to gTTS...")
-        return generate_gtts_fallback(prompt, output_path)
+        return generate_gtts_fallback(prompt, output_path, debug_mode)
 
 
 
