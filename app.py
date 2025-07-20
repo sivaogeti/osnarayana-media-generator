@@ -116,3 +116,13 @@ if prompt:
             if path and os.path.exists(path):
                 st.video(path)
                 st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path), mime="video/mp4")
+
+
+
+# --- Privacy Policy ---
+
+with st.expander("📜 Privacy Policy", expanded=False):
+    st.markdown(
+        "We value your privacy. View our [Privacy Policy](https://github.com/sivaogeti/osnarayana-media-generator/blob/main/PRIVACY_POLICY.md)",
+        unsafe_allow_html=True
+    )
