@@ -63,10 +63,10 @@ def use_fallback_image(prompt, add_watermark=False):
         st.write("❌ Could not open fallback image.")
         return None
 
-def generate_gtts_fallback(prompt, output_path, debug_mode=False):
+def generate_gtts_fallback(prompt, output_path, lang="en", debug_mode=False):
     try:
         from gtts import gTTS
-        tts = gTTS(text=prompt, lang="en")
+        tts = gTTS(text=prompt, lang=lang)
         tts.save(output_path)
         logging.info(f"gTTS fallback audio saved to {output_path}")
         if debug_mode:
@@ -76,6 +76,7 @@ def generate_gtts_fallback(prompt, output_path, debug_mode=False):
         logging.error(f"gTTS fallback failed: {e}")
         st.write(f"❌ gTTS fallback failed: {str(e)}")
         return None
+
 
 def generate_image(prompt, file_tag, add_watermark=False, dark_mode=False, debug_mode=False):
     try:
@@ -116,7 +117,7 @@ def generate_audio(prompt, output_path, debug_mode=False, lang="en"):
         if lang != "en":
             if debug_mode:
                 st.write(f"🌐 Non-English language selected: {lang}. Using gTTS.")
-            return generate_gtts_fallback(prompt, output_path, debug_mode, lang=lang)
+            return generate_gtts_fallback(prompt, output_path, lang=lang_code, debug_mode=debug_mode)|
 
         if api_key:
             if debug_mode:
@@ -141,20 +142,20 @@ def generate_audio(prompt, output_path, debug_mode=False, lang="en"):
                 if debug_mode:
                     st.write(f"⚠️ ElevenLabs failed: {str(e)}")
                     st.write("🔁 Falling back to gTTS...")
-                return generate_gtts_fallback(prompt, output_path, debug_mode)
+                return generate_gtts_fallback(prompt, output_path, lang=lang_code, debug_mode=debug_mode)|
 
         else:
             logging.warning("ELEVEN_API_KEY not found")
             if debug_mode:
                 st.write("❌ ELEVEN_API_KEY not found. Falling back to gTTS.")
-            return generate_gtts_fallback(prompt, output_path, debug_mode)
+            return generate_gtts_fallback(prompt, output_path, lang=lang_code, debug_mode=debug_mode)|
 
     except Exception as e:
         logging.error(f"Exception during audio generation setup: {e}")
         if debug_mode:
             st.write(f"❌ Exception during audio generation setup: {str(e)}")
             st.write("🔁 Falling back to gTTS...")
-        return generate_gtts_fallback(prompt, output_path, debug_mode)
+        return generate_gtts_fallback(prompt, output_path, lang=lang_code, debug_mode=debug_mode)|
   
 
 def generate_video(prompt, image_path, audio_path, output_path, add_watermark=False, dark_mode=False):
