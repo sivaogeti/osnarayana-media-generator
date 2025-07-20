@@ -113,7 +113,7 @@ if prompt:
         if st.button("Generate Video", key="gen_video_btn"):
             with st.spinner("🔄 Generating Video..."):
                 video_path = f"outputs/videos/{safe_prompt}.mp4"
-                image_path = f"outputs/images/{safe_prompt}.jpg"
+                image_path = f"outputs/images/{safe_prompt}.png"
                 audio_path = f"outputs/audio/{safe_prompt}.mp3"
         
                 ensure_dir("outputs/videos")
