@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 from moviepy.editor import ImageClip, AudioFileClip
 from elevenlabs import generate, save, set_api_key
 from googletrans import Translator
+from PIL import ImageEnhance, Image
+import tempfile
 
 # Load env vars
 load_dotenv()
@@ -74,8 +76,12 @@ def generate_gtts_fallback(prompt, output_path):
         st.write(f"❌ gTTS fallback failed: {str(e)}")
         return None
 
-def generate_image(prompt, file_tag, add_watermark=False):
+def generate_image(prompt, file_tag, add_watermark=False, dark_mode=False):
     try:
+        # Enhance prompt if dark mode is enabled
+        if dark_mode:
+            prompt += " at night, dark theme, low light, moody lighting"
+
         url = f"https://api.unsplash.com/photos/random?query={requests.utils.quote(prompt)}&client_id={UNSPLASH_ACCESS_KEY}"
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -91,11 +97,13 @@ def generate_image(prompt, file_tag, add_watermark=False):
             apply_watermark(output_path)
 
         return output_path
+
     except Exception as e:
         logging.error(f"Image generation failed: {e}")
         st.write("🔁 Unsplash failed. Using fallback.")
         st.write(f"❌ Image generation failed: {e}")
         return use_fallback_image(prompt, add_watermark=add_watermark)
+
 
 def generate_audio(prompt, output_path, debug_mode=False):
     try:
@@ -144,15 +152,32 @@ def generate_audio(prompt, output_path, debug_mode=False):
             st.write("🔁 Falling back to gTTS...")
         return generate_gtts_fallback(prompt, output_path)
 
-def generate_video(prompt, image_path, audio_path, output_path, add_watermark=False):
+
+
+def generate_video(prompt, image_path, audio_path, output_path, add_watermark=False, dark_mode=False):
     try:
+        # If dark_mode, darken the image temporarily
+        if dark_mode:
+            with Image.open(image_path) as img:
+                enhancer = ImageEnhance.Brightness(img)
+                darker_img = enhancer.enhance(0.5)  # Reduce brightness to 50%
+                
+                # Save to a temporary file
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
+                    temp_image_path = tmp.name
+                    darker_img.save(temp_image_path)
+                    image_path = temp_image_path
+
         audio_clip = AudioFileClip(audio_path)
         image_clip = ImageClip(image_path).set_duration(audio_clip.duration).resize(height=720)
         video = image_clip.set_audio(audio_clip)
+
         output_path = f"outputs/videos/{sanitize_filename(prompt)}.mp4"
         video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac", verbose=False, logger=None)
         return output_path
+
     except Exception as e:
         logging.error(f"Video generation failed: {e}")
         st.write(f"❌ Video generation failed: {e}")
         return None
+
