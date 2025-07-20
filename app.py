@@ -128,4 +128,4 @@ if prompt:
 #    )
 
 
-st.markdown("[📜 View Privacy Policy](https://your-repo-link/privacy.html)", unsafe_allow_html=True)
+st.markdown("[📜 View Privacy Policy](https://github.com/sivaogeti/osnarayana-media-generator/blob/main/privacy.html)", unsafe_allow_html=True)
