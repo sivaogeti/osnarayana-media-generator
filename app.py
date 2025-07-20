@@ -92,7 +92,7 @@ if prompt:
         if st.button("Generate Image"):
             image_path = f"outputs/images/{safe_prompt}.png"
             ensure_dir("outputs/images")
-            path = generate_image(translated_prompt, image_path, add_watermark, dark_mode)
+            path = generate_image(translated_prompt, image_path, add_watermark, dark_mode,debug_mode)
             if path and os.path.exists(path):
                 st.image(path, caption="Generated Image", use_container_width=True)
                 st.download_button("📥 Download Image", data=open(path, "rb"), file_name=os.path.basename(path), mime="image/png")
@@ -118,7 +118,7 @@ if prompt:
             if not os.path.exists(image_path):
                 if debug_mode:
                     st.info("🎨 Generating image as it doesn't exist...")
-                image_path = generate_image(translated_prompt, image_path, add_watermark, dark_mode)
+                image_path = generate_image(translated_prompt, image_path, add_watermark, dark_mode, debug_mode)
     
             if not os.path.exists(audio_path):
                 if debug_mode:
