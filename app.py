@@ -8,14 +8,26 @@ from googletrans import Translator
 
 
 # --- Helper Functions ---
-LANGUAGE_CODES = {v: k for k, v in tts_langs().items()}
-LANGUAGE_CODES = dict(sorted(LANGUAGE_CODES.items()))  # Alphabetical by language name
+
 #LANGUAGE_CODES = {
 #    "English": "en",
 #    "Telugu": "te",
 #    "Hindi": "hi",
 #    "Tamil": "ta"
 #}
+
+# List only Indian language codes
+INDIAN_LANG_CODES = ["hi", "te", "ta", "kn", "ml", "mr", "gu", "pa", "ur", "bn"]
+
+# Get all available gTTS languages
+all_langs = tts_langs()
+
+# Filter only Indian languages
+INDIAN_LANGUAGES = {
+    f"{all_langs[code]} ({code})": code
+    for code in INDIAN_LANG_CODES if code in all_langs
+}
+
 
 def translate_prompt(prompt, target_lang):
     if target_lang == "English":
@@ -88,7 +100,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Inline Toggles for selection of Language
-lang = st.selectbox("🌐 Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
+#lang = st.selectbox("🌐 Choose Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
+selected_display = st.selectbox("🌐 Choose Language", list(INDIAN_LANGUAGES.keys()))
 
 # --- Prompt Section ---
 st.caption("Enter your media prompt")
@@ -125,7 +138,9 @@ if prompt:
             with st.spinner("🔄 Generating Audio..."):
                 audio_path = f"outputs/audio/{safe_prompt}.mp3"
                 ensure_dir("outputs/audio")
-                lang_code = LANGUAGE_CODES.get(target_lang, "en")                
+                #lang_code = LANGUAGE_CODES.get(target_lang, "en")   
+                # Get language code
+                lang_code = INDIAN_LANGUAGES[selected_display]
                 path = generate_audio(translated_prompt, audio_path, debug_mode, lang=lang_code)
                 if path and os.path.exists(path):
                     st.audio(path)
@@ -149,7 +164,9 @@ if prompt:
                 if not os.path.exists(audio_path):
                     if debug_mode:
                         st.info("🎤 Generating audio as it doesn't exist...")                    
-                    lang_code = LANGUAGE_CODES.get(target_lang, "en")
+                    #lang_code = LANGUAGE_CODES.get(target_lang, "en")
+                    # Get language code
+                    lang_code = INDIAN_LANGUAGES[selected_display]
                     audio_path = generate_audio(translated_prompt, audio_path, debug_mode, lang=lang_code)
         
                 # Proceed only if both files exist
