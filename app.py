@@ -22,9 +22,9 @@ def sanitize_filename(prompt):
 def ensure_dir(path):
     os.makedirs(path, exist_ok=True)
 
-def reset_state():
-    st.session_state.clear()
-    st.experimental_rerun()
+#def reset_state():
+#    st.session_state.clear()
+#    st.experimental_rerun()
 
 # --- Page Configuration ---
 st.set_page_config(page_title="OSN Media Generator", layout="wide")
@@ -43,8 +43,8 @@ with st.expander("⚙️ Settings", expanded=False):
     dark_mode = st.toggle("🌗 Force Dark Mode", value=False)
 
     # Reset Button
-    if st.button("♻️ Reset"):
-        reset_state()
+    #if st.button("♻️ Reset"):
+    #    reset_state()
 
     st.markdown("---")
 
