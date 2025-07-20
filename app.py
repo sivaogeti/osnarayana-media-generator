@@ -25,15 +25,16 @@ def ensure_dir(path):
 # --- Streamlit Page Config ---
 st.set_page_config(page_title="OSN Media Generator", layout="wide")
 
-# ---------- Sidebar ----------
-with st.sidebar:
-    st.title("⚙️ Settings")
+# ---------- Inline Settings ----------
+with st.expander("⚙️ Settings", expanded=True):
     language_options = ['English', 'Telugu', 'Hindi']
     prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
-    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)    
+    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
     dark_mode = st.toggle("🌗 Dark Mode", value=False)
     st.markdown("---")
     st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
+
+# Dark Mode Styling
 st.markdown(
     """
     <style>
@@ -43,23 +44,18 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
-
+# ---------- Main UI ----------
 st.title("🎮 Welcome to OSN Media Generator")
 st.caption("Enter your media prompt")
 
 prompt = st.text_input("📝 Prompt", placeholder="e.g., A farmer working in the field", label_visibility="collapsed")
 
-# Debug toggle
+# Inline Debug, Watermark, Lang Toggles
 debug_mode = st.toggle("🪛 Show Debug Logs", value=False)
-
-# Watermark option
 add_watermark = st.checkbox("🌊 Add watermark/logo (optional)", value=False)
-
-# Translate language
 lang = st.selectbox("🌐 Language", ["English", "Telugu", "Hindi", "Tamil"], index=0)
 
-# Tabs for media
+# ---------- Tabs for Media ----------
 tab1, tab2, tab3 = st.tabs(["🖼️ Image", "🔊 Audio", "🎞️ Video"])
 
 if prompt:
@@ -72,9 +68,8 @@ if prompt:
             ensure_dir("outputs/images")
             path = generate_image(translated_prompt, image_path, add_watermark)
             if path and os.path.exists(path):
-                st.image(path, caption="Generated Image", use_container_width=True)                
+                st.image(path, caption="Generated Image", use_container_width=True)
                 st.download_button("📥 Download Image", data=open(path, "rb"), file_name=os.path.basename(path), mime="image/png")
-
 
     with tab2:
         if st.button("Generate Audio"):
@@ -82,9 +77,8 @@ if prompt:
             ensure_dir("outputs/audio")
             path = generate_audio(translated_prompt, audio_path, debug_mode)
             if path and os.path.exists(path):
-                st.audio(path)                
+                st.audio(path)
                 st.download_button("📥 Download Audio", data=open(path, "rb"), file_name=os.path.basename(path), mime="audio/mpeg")
-
 
     with tab3:
         if st.button("Generate Video"):
@@ -94,7 +88,5 @@ if prompt:
             ensure_dir("outputs/videos")
             path = generate_video(translated_prompt, image_path, audio_path, video_path, add_watermark)
             if path and os.path.exists(path):
-                st.video(path)                
+                st.video(path)
                 st.download_button("📥 Download Video", data=open(path, "rb"), file_name=os.path.basename(path), mime="video/mp4")
-
-
