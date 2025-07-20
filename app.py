@@ -3,17 +3,19 @@ import os
 from datetime import datetime
 from backend.media_gen import generate_audio, generate_image, generate_video
 from googletrans import Translator
+from gtts.lang import tts_langs
+from googletrans import Translator
+
 
 # --- Helper Functions ---
 
-from googletrans import Translator
-
-LANGUAGE_CODES = {
-    "English": "en",
-    "Telugu": "te",
-    "Hindi": "hi",
-    "Tamil": "ta"
-}
+LANGUAGE_CODES = dict(sorted(LANGUAGE_CODES.items()))  # Alphabetical by language name
+#LANGUAGE_CODES = {
+#    "English": "en",
+#    "Telugu": "te",
+#    "Hindi": "hi",
+#    "Tamil": "ta"
+#}
 
 def translate_prompt(prompt, target_lang):
     if target_lang == "English":
