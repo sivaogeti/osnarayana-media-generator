@@ -121,8 +121,11 @@ if prompt:
 
 # --- Privacy Policy ---
 
-with st.expander("📜 Privacy Policy", expanded=False):
-    st.markdown(
-        "We value your privacy. View our [Privacy Policy](https://github.com/sivaogeti/osnarayana-media-generator/blob/main/PRIVACY_POLICY.md)",
-        unsafe_allow_html=True
-    )
+#with st.expander("📜 Privacy Policy", expanded=False):
+#    st.markdown(
+#        "We value your privacy. View our [Privacy Policy](https://github.com/sivaogeti/osnarayana-media-generator/blob/main/PRIVACY_POLICY.md)",
+#        unsafe_allow_html=True
+#    )
+
+
+st.markdown("[📜 View Privacy Policy](https://your-repo-link/privacy.html)", unsafe_allow_html=True)
