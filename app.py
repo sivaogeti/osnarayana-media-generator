@@ -6,15 +6,26 @@ from googletrans import Translator
 
 # --- Helper Functions ---
 
-def translate_prompt(prompt, lang):
-    if lang == "English":
+from googletrans import Translator
+
+LANGUAGE_CODES = {
+    "English": "en",
+    "Telugu": "te",
+    "Hindi": "hi",
+    "Tamil": "ta"
+}
+
+def translate_prompt(prompt, target_lang):
+    if target_lang == "English":
         return prompt
     try:
         translator = Translator()
-        translated = translator.translate(prompt, dest=lang.lower()).text
-        return translated
-    except Exception:
-        return prompt  # fallback to original
+        dest_code = LANGUAGE_CODES.get(target_lang, "en")
+        translated = translator.translate(prompt, dest=dest_code)
+        return translated.text
+    except Exception as e:
+        print(f"[Translation Error]: {e}")
+        return prompt
 
 def sanitize_filename(prompt):
     return "".join(c if c.isalnum() else "_" for c in prompt.strip())[:50].lower()
@@ -36,8 +47,11 @@ st.title("🎮 Welcome to OSN Media Generator")
 # --- Collapsed Settings ---
 with st.expander("⚙️ Settings", expanded=False):
     language_options = ['English', 'Telugu', 'Hindi']
-    prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
-    target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
+    // Merging Prompt Language + Translate To Language into One Dropdown
+    #prompt_lang = st.selectbox("Select Prompt Language", options=language_options, index=0)
+    #target_lang = st.selectbox("Translate to Language", options=language_options, index=0)
+    target_lang = st.selectbox("🌐 Language to Generate In", ["English", "Telugu", "Hindi", "Tamil"], index=0)
+
 
     # Optional manual toggle fallback (not auto, just UI helper)
     dark_mode = st.toggle("🌗 Force Dark Mode", value=False)
