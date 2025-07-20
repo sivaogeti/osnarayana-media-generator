@@ -118,7 +118,8 @@ if prompt:
             with st.spinner("🔄 Generating Audio..."):
                 audio_path = f"outputs/audio/{safe_prompt}.mp3"
                 ensure_dir("outputs/audio")
-                path = generate_audio(translated_prompt, audio_path, debug_mode)
+                lang_code = LANGUAGE_CODES.get(target_lang, "en")                
+                path = generate_audio(translated_prompt, audio_path, debug_mode, lang=lang_code)
                 if path and os.path.exists(path):
                     st.audio(path)
                     st.download_button("📥 Download Audio", data=open(path, "rb"), file_name=os.path.basename(path), mime="audio/mpeg")
@@ -140,8 +141,9 @@ if prompt:
         
                 if not os.path.exists(audio_path):
                     if debug_mode:
-                        st.info("🎤 Generating audio as it doesn't exist...")
-                    audio_path = generate_audio(translated_prompt, audio_path, debug_mode)
+                        st.info("🎤 Generating audio as it doesn't exist...")                    
+                    lang_code = LANGUAGE_CODES.get(target_lang, "en")
+                    audio_path = generate_audio(translated_prompt, audio_path, debug_mode, lang=lang_code)
         
                 # Proceed only if both files exist
                 if os.path.exists(image_path) and os.path.exists(audio_path):
