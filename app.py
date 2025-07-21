@@ -58,7 +58,8 @@ st.markdown(
 )
 
 # Caption below
-st.caption("Crafted with 💗 by O.S.Narayana")
+st.caption("Crafted with 💗 by [O.S.Narayana](https://www.linkedin.com/in/osnarayana/)")
+
 st.markdown("---")
 # --- Settings ---
 with st.expander("⚙️ Settings", expanded=False):
