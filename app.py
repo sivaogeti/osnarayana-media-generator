@@ -40,8 +40,7 @@ st.set_page_config(page_title="OSN Media Generator", page_icon="🎮", layout="w
 # --- Header Section ---
 col1, col2 = st.columns([0.1, 0.9])
 with col1:
-    st.image("assets/app_icon.png", width=60)
-    st.title("Great OSN Media Generator")
+    st.image("assets/app_icon.png", width=30)    
 with col2:
     st.title("Welcome to OSN Media Generator")
 st.caption("Crafted with ❤️ by O.S.Narayana")
