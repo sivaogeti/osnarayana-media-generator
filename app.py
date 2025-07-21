@@ -56,7 +56,7 @@ st.set_page_config(page_title="OSN Media Generator", layout="wide")
 
 # --- Top Splash Header ---
 st.set_page_config(page_title="OSN Media Generator", page_icon="🎮")
-st.caption("Made with ❤️ by O.S.Narayana")
+st.caption("Crafted with ❤️ by O.S.Narayana")
 
 st.title("🎮 Welcome to OSN Media Generator")
 
