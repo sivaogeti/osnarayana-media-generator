@@ -59,9 +59,7 @@ st.markdown(
 
 # Caption below
 st.caption("Crafted with 💗 by O.S.Narayana")
-
 st.markdown("---")
-
 # --- Settings ---
 with st.expander("⚙️ Settings", expanded=False):
     target_lang = st.selectbox("🌐 Output Language", list(SUPPORTED_LANGUAGES.keys()), index=0)
