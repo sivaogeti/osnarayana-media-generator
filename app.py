@@ -48,7 +48,7 @@ with col2:
 st.markdown(
     """
     <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="/assets/app_icon.png" width="50" style="border-radius: 12px;" />
+        <img src="/assets/app_icon.png" width="60"" />
         <h1 style="margin: 0; font-size: 2em;">Welcome to OSN Media Generator</h1>
     </div>
     """,
