@@ -44,7 +44,6 @@ def ensure_dir(path):
 # --- Page Configuration ---
 st.set_page_config(page_title="OSN Media Generator", page_icon="🎮", layout="wide")
 
-st.caption("Crafted with ❤️ by O.S.Narayana")
 # --- Header Section ---
 icon_base64 = get_base64_image("assets/app_icon.png")  # Path of icon file
 
@@ -57,6 +56,9 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# Caption below
+st.caption("Crafted with 💗 by O.S.Narayana")
 
 st.markdown("---")
 
