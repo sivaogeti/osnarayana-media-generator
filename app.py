@@ -66,8 +66,11 @@ st.markdown("---")
 # --- Settings ---
 with st.expander("⚙️ Settings", expanded=False):
     input_langs = {
-        f"{all_langs[code]} ({code})": code
-        for code in INDIAN_LANG_CODES if code in all_langs        
+        "Auto Detect": "auto",  # 🌟 First option
+        **{
+            f"{all_langs[code]} ({code})": code
+            for code in INDIAN_LANG_CODES if code in all_langs
+        }
     }
 
     source_lang = st.selectbox("🗣️ Input Language", list(input_langs.keys()), index=0)
