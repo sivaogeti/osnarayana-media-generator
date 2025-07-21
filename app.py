@@ -45,6 +45,16 @@ with col1:
 with col2:
     st.title("Welcome to OSN Media Generator")
 
+st.markdown(
+    """
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="/assets/app_icon.png" width="50" style="border-radius: 12px;" />
+        <h1 style="margin: 0; font-size: 2em;">Welcome to OSN Media Generator</h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 
 st.markdown("---")
 
