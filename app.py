@@ -52,7 +52,7 @@ with col1:
 with col2:
     st.title("Welcome to OSN Media Generator")
 
-icon_base64 = get_base64_image("app_icon.png")  # or your path
+icon_base64 = get_base64_image("assets/app_icon.png")  # Path of icon file
 
 st.markdown(
     f"""
