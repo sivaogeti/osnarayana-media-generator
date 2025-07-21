@@ -23,7 +23,7 @@ SUPPORTED_LANGUAGES = {
     for code in INDIAN_LANG_CODES if code in all_langs
 }
 
-def translate_prompt(prompt, target_lang, source_lang):
+def translate_prompt(prompt, target_lang, source_lang, debug=False):
     if target_lang == "English":
         return prompt
     try:
@@ -31,11 +31,17 @@ def translate_prompt(prompt, target_lang, source_lang):
         dest_code = SUPPORTED_LANGUAGES.get(target_lang, "en")
         src_code = input_langs.get(source_lang, "auto")
         translated = translator.translate(prompt, src=src_code, dest=dest_code)
+
+        # Debug log
+        if debug and src_code == "auto":
+            detected_lang = translated.src
+            st.info(f"🌐 Detected input language: **{all_langs.get(detected_lang, detected_lang)} ({detected_lang})**")
+
         return translated.text
     except Exception as e:
-        print(f"[Translation Error]: {e}")
+        if debug:
+            st.error(f"[Translation Error]: {e}")
         return prompt
-
 
 def sanitize_filename(prompt):
     return "".join(c if c.isalnum() else "_" for c in prompt.strip())[:50].lower()
@@ -73,7 +79,21 @@ with st.expander("⚙️ Settings", expanded=False):
         }
     }
 
-    source_lang = st.selectbox("🗣️ Input Language", list(input_langs.keys()), index=0)
+    #source_lang = st.selectbox("🗣️ Input Language", list(input_langs.keys()), index=0)
+    st.markdown("#### 🗣️ Input Language")
+    st.markdown(
+        """
+        <span style="font-size: 0.9em;">
+            Select the language of your input prompt.
+            <b>Auto Detect</b> uses Google Translate to detect the language automatically.
+            <span title="If you're unsure of your language, choose Auto Detect. Otherwise, pick a specific language for better accuracy.">ℹ️</span>
+        </span>
+        """,
+        unsafe_allow_html=True,
+    )
+    source_lang = st.selectbox("", list(input_langs.keys()), index=0)
+
+    
     target_lang = st.selectbox("🌐 Output Language", list(SUPPORTED_LANGUAGES.keys()), index=0)
     dark_mode = st.toggle("🌗 Force Dark Mode", value=False)
     st.markdown("---")
@@ -105,7 +125,7 @@ add_watermark = True
 tab1, tab2, tab3 = st.tabs(["🖼️ Image", "🔊 Audio", "🎞️ Video"])
 
 if prompt:
-    translated_prompt = translate_prompt(prompt, target_lang, source_lang)
+    translated_prompt = translate_prompt(prompt, target_lang, source_lang, debug=debug_mode)
     safe_prompt = sanitize_filename(prompt)
 
     with tab1:
