@@ -55,7 +55,9 @@ def ensure_dir(path):
 st.set_page_config(page_title="OSN Media Generator", layout="wide")
 
 # --- Top Splash Header ---
-st.caption("Built by O.S.Narayana ❤️ using Streamlit + ElevenLabs + Unsplash")
+st.set_page_config(page_title="OSN Media Generator", page_icon="🎮")
+st.caption("Built by O.S.Narayana")
+
 st.title("🎮 Welcome to OSN Media Generator")
 
 # --- Collapsed Settings ---
