@@ -7,6 +7,13 @@ from datetime import datetime
 from backend.media_gen import generate_audio, generate_image, generate_video
 from googletrans import Translator
 from gtts.lang import tts_langs
+import base64
+
+# --- Helper Functions ---
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+
 
 # --- Helper Functions ---
 INDIAN_LANG_CODES = ["en", "hi", "te", "ta", "kn", "ml", "mr", "gu", "pa", "ur", "bn"]
@@ -45,16 +52,17 @@ with col1:
 with col2:
     st.title("Welcome to OSN Media Generator")
 
+icon_base64 = get_base64_image("Icon.png")  # or your path
+
 st.markdown(
-    """
+    f"""
     <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="/assets/app_icon.png" width="60"" />
+        <img src="data:image/png;base64,{icon_base64}" width="50" style="border-radius: 10px;" />
         <h1 style="margin: 0; font-size: 2em;">Welcome to OSN Media Generator</h1>
     </div>
     """,
     unsafe_allow_html=True
 )
-
 
 st.markdown("---")
 
