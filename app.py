@@ -56,7 +56,7 @@ st.set_page_config(page_title="OSN Media Generator", layout="wide")
 
 # --- Top Splash Header ---
 st.set_page_config(page_title="OSN Media Generator", page_icon="🎮")
-st.caption("Built by O.S.Narayana")
+st.caption("Made with ❤️ by O.S.Narayana")
 
 st.title("🎮 Welcome to OSN Media Generator")
 
@@ -195,3 +195,6 @@ if prompt:
 
 
 st.markdown("[📜 View Privacy Policy](https://sivaogeti.github.io/osnarayana-media-generator/privacy.html)", unsafe_allow_html=True)
+
+st.markdown("---")
+st.caption("© 2025 OSN Media | Built with Streamlit")
