@@ -23,17 +23,19 @@ SUPPORTED_LANGUAGES = {
     for code in INDIAN_LANG_CODES if code in all_langs
 }
 
-def translate_prompt(prompt, target_lang):
+def translate_prompt(prompt, target_lang, source_lang):
     if target_lang == "English":
         return prompt
     try:
         translator = Translator()
         dest_code = SUPPORTED_LANGUAGES.get(target_lang, "en")
-        translated = translator.translate(prompt, dest=dest_code)
+        src_code = input_langs.get(source_lang, "auto")
+        translated = translator.translate(prompt, src=src_code, dest=dest_code)
         return translated.text
     except Exception as e:
         print(f"[Translation Error]: {e}")
         return prompt
+
 
 def sanitize_filename(prompt):
     return "".join(c if c.isalnum() else "_" for c in prompt.strip())[:50].lower()
@@ -63,6 +65,13 @@ st.caption("Crafted with 💗 by [O.S.Narayana](https://www.linkedin.com/in/osna
 st.markdown("---")
 # --- Settings ---
 with st.expander("⚙️ Settings", expanded=False):
+    input_langs = {
+        f"{all_langs[code]} ({code})": code
+        for code in all_langs
+        if code in all_langs
+    }
+
+    source_lang = st.selectbox("🗣️ Input Language", list(input_langs.keys()), index=0)
     target_lang = st.selectbox("🌐 Output Language", list(SUPPORTED_LANGUAGES.keys()), index=0)
     dark_mode = st.toggle("🌗 Force Dark Mode", value=False)
     st.markdown("---")
@@ -94,7 +103,7 @@ add_watermark = True
 tab1, tab2, tab3 = st.tabs(["🖼️ Image", "🔊 Audio", "🎞️ Video"])
 
 if prompt:
-    translated_prompt = translate_prompt(prompt, target_lang)
+    translated_prompt = translate_prompt(prompt, target_lang, source_lang)
     safe_prompt = sanitize_filename(prompt)
 
     with tab1:
